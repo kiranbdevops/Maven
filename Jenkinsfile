@@ -1,6 +1,8 @@
 
-node('any')
+pipeline
 {
+    agent any
+
     stage('ContinuousDownload') 
     {
          git 'https://github.com/selenium-saikrishna/maven.git'
