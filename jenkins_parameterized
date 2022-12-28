@@ -27,10 +27,6 @@ pipeline {
 
 =====================
 
-
-
-
-
 pipeline {
     agent any
 
@@ -69,3 +65,65 @@ pipeline {
     }
 }
 
+=============================================
+
+
+pipeline{
+    agent any
+       
+stages{
+    stage('initial'){
+        steps{
+            script{
+           properties([parameters([[$class: 'ChoiceParameter', choiceType: 'PT_RADIO', filterLength: 1, filterable: false, name: 'env', randomName: 'choice-parameter-5695275913713', script: [$class: 'GroovyScript', fallbackScript: [classpath: [], oldScript: '', sandbox: false, script: 'return[\'select proepr env\']'], script: [classpath: [], oldScript: '', sandbox: false, script: '''return[
+\'production\',
+\'QA\',
+\'Development\'
+]''']]], [$class: 'CascadeChoiceParameter', choiceType: 'PT_SINGLE_SELECT', filterLength: 1, filterable: false, name: 'sub_env', randomName: 'choice-parameter-5695278327258', referencedParameters: 'env', script: [$class: 'GroovyScript', fallbackScript: [classpath: [], oldScript: '', sandbox: false, script: 'return["select proper sub_env"]'], script: [classpath: [], oldScript: '', sandbox: false, script: '''if (env.equals("production")){
+return ["PROD1"]
+}
+else if (env.equals("QA")){
+return["QA1","QA2"]
+}
+else if (env.equals("Development")){
+return["Dev1","Dev2"]
+}
+else{
+retuen["select  a server from drop down"]
+}''']]], [$class: 'CascadeChoiceParameter', choiceType: 'PT_SINGLE_SELECT', filterLength: 1, filterable: true, name: 'instances', randomName: 'choice-parameter-5695290671606', referencedParameters: 'sub_env', script: [$class: 'GroovyScript', fallbackScript: [classpath: [], oldScript: '', sandbox: false, script: 'return["select instance"]'], script: [classpath: [], oldScript: '', sandbox: false, script: '''if(sub_env.equals("Dev1")){
+return ["sd-type-01", "sd-typr-02","sd-typr-03"]
+}
+else if(sub_env.equals("Dev2")){
+return ["sd-dev2-01", "sd-dev2-02","sd-dev2-03"]
+}
+else if(sub_env.equals("PROD1")){
+return ["sd-prod-01", "sd-prod-02","sd-prod-03"]
+}
+else if(sub_env.equals("QA1")){
+return["No services found"]
+}
+else if(sub_env.equals("QA2")){
+return["sd-qa-01", "sd-qa-02"]
+}
+else {
+return["select any instance"]
+}''']]]])])
+            echo "Hello world"
+            echo "Environemnt - ${params.env}"
+            echo "server - ${params.sub_env}"
+            echo "instance - ${params.instances}"
+            }
+        }
+    }
+
+stage{
+    steps{
+        when{
+            expression { QA == "${params.env}"
+        }
+        echo "This is QA environemnt"
+    }
+}
+}
+}
+}
