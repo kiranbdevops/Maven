@@ -1,0 +1,25 @@
+
+pipeline {
+    agent any
+
+    stages {
+        stage('set parameter')
+        {
+            steps {
+                script {
+                    //       properties([parameters([choice(choices: ['master'], description: 'select branch', name: 'branch')])])
+                    properties([parameters([booleanParam(defaultValue: true, description: 'select boolean value', name: 'Bookean'), string(defaultValue: 'script run', description: 'string', name: 'String parameter', trim: true), choice(choices: ['master', 'dev'. 'test'], description: 'select branch', name: 'branch')])])
+                }
+            }
+        }
+    
+
+        stage('get SCM')
+        {
+            steps {
+            //    git url: 'https://github.com/kiranbdevops/webapp_tomcat.git', branch: '${params.branch}'
+                git branch: "${params.branch}", url: 'https://github.com/kiranbdevops/webapp_tomcat.git'
+            }
+        }
+    }
+}
