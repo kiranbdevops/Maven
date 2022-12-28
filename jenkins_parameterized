@@ -23,3 +23,49 @@ pipeline {
         }
     }
 }
+
+
+=====================
+
+
+
+
+
+pipeline {
+    agent any
+
+    stages {
+        stage('set parameter')
+        {
+            input {
+  message 'Required Approval'
+  id 'test'
+  ok 'OK'
+  submitter 'admin'
+            }
+  
+            steps {
+                script {
+                    //       properties([parameters([choice(choices: ['master'], description: 'select branch', name: 'branch')])])
+                    properties([parameters([choice(choices: ['1', '2', '3', '4'], description: 'Select Choice', name: 'choice'), choice(choices: ['master', 'QA', 'dev'], description: 'Select Branch', name: 'Branch')])])
+                }
+            }
+        }
+
+        stage('get SCM')
+        {
+         when{
+            expression { choice == '1'}
+         }
+         environment{
+             localvar = "Hello world"
+         }
+            steps {
+                //    git url: 'https://github.com/kiranbdevops/webapp_tomcat.git', branch: '${params.branch}'
+                git branch: "${params.Branch}", url: 'https://github.com/kiranbdevops/webapp_tomcat.git'
+                echo " welcome to ${localvar}"
+            }
+        }
+    }
+}
+
