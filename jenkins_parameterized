@@ -189,4 +189,47 @@ stage('QA Stage'){
 }
 }
 
+==========================================
 
+pipeline{
+    agent any
+    stages{
+        stage('setting parameters'){
+        steps{
+            script{
+        properties([parameters([[$class: 'ChoiceParameter', choiceType: 'PT_RADIO', filterLength: 1, filterable: false, name: 'env', randomName: 'choice-parameter-4046353678759', script: [$class: 'GroovyScript', fallbackScript: [classpath: [], oldScript: '', sandbox: false, script: ''], script: [classpath: [], oldScript: '', sandbox: false, script: '''return[
+"DEV",
+"QA",
+"PROD"
+]''']]]])])
+            }
+        }
+    }
+
+        stage('getting code from SCM'){
+        steps{
+         git 'https://github.com/kiranbdevops/Maven.git'
+
+        }
+    }
+
+        stage('cloning manual war file'){
+        steps{
+        git 'https://github.com/kiranbdevops/testwar.git'
+        echo " valus is - ${params.env}" 
+        }
+    }
+
+        stage('deploy to DEV server'){
+                when{
+                expression { "${params.env}" == 'DEV'  }
+            }
+        steps{
+        deploy adapters: [tomcat9(credentialsId: 'tomcat_cred', path: '', url: 'http://3.129.90.8:8085/')], contextPath: 'testkiran', war: '**/*.war'
+
+        }
+    }
+
+
+}
+}
